@@ -19,7 +19,7 @@
     <Load
         :people="people"
         @loadPeople="loadPeople"
-        @delete="deletePeople"
+        @remove="removePerson"
     ></Load>
   </div>
 </template>
@@ -61,17 +61,18 @@ export default {
       this.name = ''
 
     },
-   async loadPeople() {
-     const { data } = await axios.get('https://vue-with-http-4fce4-default-rtdb.firebaseio.com/people.json')
-     this.people = Object.keys(data).map(key => {
-       return {
-         id: key,
-         ...data[key]
-       }
-     })
+    async loadPeople() {
+      const {data} = await axios.get('https://vue-with-http-4fce4-default-rtdb.firebaseio.com/people.json')
+      this.people = Object.keys(data).map(key => {
+        return {
+          id: key,
+          ...data[key]
+        }
+      })
     },
-    deletePeople(id) {
-      console.log(id)
+    async removePerson(id) {
+      await axios.delete(`https://vue-with-http-4fce4-default-rtdb.firebaseio.com/people/${id}.json`)
+      this.people = this.people.filter(person => person.id !== id)
     }
   },
   components: {

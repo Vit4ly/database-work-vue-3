@@ -1,11 +1,11 @@
 <template>
   <div v-if="people.length !== 0">
     <div class="card inline"
-         v-for="( {firstName, id}, idx ) in people"
+         v-for="{firstName, id} in people"
          :key="id"
     >
       <h3>{{ firstName }}</h3>
-      <button class="btn" @click="$emit('delete', idx)">Удалить</button>
+      <button class="btn" @click="$emit('remove', id)">Удалить</button>
     </div>
   </div>
   <div class="card center" v-else>
@@ -15,7 +15,8 @@
         class="btn"
 
     >
-      Загрузить человека</button>
+      Загрузить человека
+    </button>
   </div>
 
 
@@ -26,7 +27,7 @@ export default {
   props: {
     people: Array
   },
-  emits: ['load-people', 'delete'],
+  emits: ['load-people', 'remove'],
   name: "Load"
 }
 </script>
