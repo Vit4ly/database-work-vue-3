@@ -17,7 +17,11 @@
       <button type="submit" class="btn " :disabled="!name.length">Создать человека</button>
 
     </form>
+
+    <app-loader v-if="loading"></app-loader>
+
     <Load
+        v-else
         :people="people"
         @loadPeople="loadPeople"
         @remove="removePerson"
@@ -27,9 +31,9 @@
 
 <script>
 
-//https://vue-with-http-4fce4-default-rtdb.firebaseio.com/json
 import Load from "@/Load";
 import AppAlert from "@/AppAlert";
+import AppLoader from "@/AppLoader";
 import axios from 'axios';
 
 export default {
@@ -38,7 +42,8 @@ export default {
     return {
       name: '',
       people: [],
-      alert: null
+      alert: null,
+      loading: false
     }
   },
   mounted() {
@@ -46,7 +51,7 @@ export default {
   },
   methods: {
     async createPeople() {
-      const response = await fetch('https://vue-with-http-4fce4-default-rtdb.firebaseio.com/people.json', {
+      const response = await fetch('https://vue3-data-base-http-default-rtdb.firebaseio.com/people.json', {
         method: 'POST',
         headers: {
           'Content-Type': 'application.json'
@@ -66,26 +71,29 @@ export default {
     },
     async loadPeople() {
       try {
-        const {data} = await axios.get('https://vue-with-http-4fce4-default-rtdb.firebaseio.com/people.json')
+        this.loading = true
+        const {data} = await axios.get('https://vue3-data-base-http-default-rtdb.firebaseio.com/people.json')
         this.people = Object.keys(data).map(key => {
           return {
             id: key,
             ...data[key]
           }
         })
+        this.loading = false
       } catch (e) {
         this.alert = {
           type: 'danger',
           title: 'Ошибка',
           text: e.message
         }
+        this.loading = false
       }
 
     },
     async removePerson(id) {
       try {
         const person = this.people.find(person => person.id === id).firstName
-        await axios.delete(`https://vue-with-http-4fce4-default-rtdb.firebaseio.com/people/${id}.json`)
+        await axios.delete(`https://vue3-data-base-http-default-rtdb.firebaseio.com/people/${id}.json`)
         this.people = this.people.filter(person => person.id !== id)
         this.alert = {
           type: 'primary',
@@ -99,7 +107,8 @@ export default {
   },
   components: {
     Load,
-    AppAlert
+    AppAlert,
+    AppLoader
   }
 }
 </script>
